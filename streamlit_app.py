@@ -7,7 +7,7 @@ import os
 st.title("DFD Generator with Streamlit")
 
 # ユーザー入力欄（DFDのテキストを受け取る）
-dfd_text = st.text_area("Enter DFD text:")
+dfd_text = st.text_area("Enter DFD text (see [syntax document](https://github.com/pbauermeister/dfd/blob/main/doc/README.md)):")
 
 # 画像出力フォーマットの選択
 output_format = st.selectbox("Select output format:", ["svg", "png", "pdf", "jpg"], index=0)

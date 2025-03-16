@@ -24,7 +24,13 @@ if st.button("Generate DFD"):
         output_file_path = input_file_path.replace(".txt", f".{output_format}")
         
         # `data-flow-diagram` コマンドを実行
-        command = ["data-flow-diagram", "-o", output_file_path, "-f", output_format, input_file_path]
+        command = [
+            "data-flow-diagram",
+            "-o", output_file_path,
+            "-f", output_format,
+            "--no-graph-title",
+            input_file_path
+        ]
         process = subprocess.run(command, capture_output=True, text=True)
         
         if process.returncode == 0:

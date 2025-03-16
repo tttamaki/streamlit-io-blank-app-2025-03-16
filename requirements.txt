@@ -1,2 +1,2 @@
 streamlit
-data-flow-diagram
+git+https://github.com/pbauermeister/dfd.git

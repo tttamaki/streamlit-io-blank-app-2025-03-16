@@ -7,16 +7,8 @@ import urllib.parse
 # Streamlitアプリのタイトル
 st.title("DFD Generator with Streamlit")
 
-# 環境変数一覧を表示（デバッグ用）
-st.write("### Environment Variables")
-st.write(os.environ)
-
-st.write("### Secrets")
-st.write(st.secrets)
-
-# 環境変数からBASE_URLを取得（デフォルト値あり）
+# secretsからBASE_URLを取得（デフォルト値あり）
 BASE_URL = st.secrets["BASE_URL"] if "BASE_URL" in st.secrets else "https://this.app.url/"
-st.write(f"BASE_URL: {BASE_URL}")  # デバッグ用に表示
 
 # URLパラメータからDFDのテキストを取得（指定がない場合は空の文字列）
 query_params = st.query_params
@@ -69,7 +61,7 @@ if st.button("Generate DFD"):
             
             # URLをコピーできるボタンを追加
             st.text_input("Copy the generated DFD URL:", generated_url, help="Copy this URL manually")
-            st.code(generated_url, language="text", line_numbers=True, wrap_lines=True)
+            st.code(generated_url, language="text")
         else:
             st.error("Error generating DFD:")
             st.text(process.stderr)

@@ -1,6 +1,6 @@
 # DFD Generator with Streamlit
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-oj2v73jhrsg.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://data-flow-diagram-online.streamlit.app/)
 
 This Streamlit app allows users to generate Data Flow Diagrams (DFD) from textual descriptions using the [`data-flow-diagram`](https://github.com/pbauermeister/dfd) command-line tool.
 

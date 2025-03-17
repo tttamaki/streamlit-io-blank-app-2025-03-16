@@ -7,8 +7,14 @@ import urllib.parse
 # Streamlitアプリのタイトル
 st.title("DFD Generator with Streamlit")
 
-# 現在のアプリのURLを取得（仮のURLを設定、実際にはデプロイ時に変更）
+# 環境変数一覧を表示（デバッグ用）
+st.write("### Environment Variables")
+st.write(os.environ)
+
+# 環境変数からBASE_URLを取得（デフォルト値あり）
 BASE_URL = os.getenv("BASE_URL", "https://this.app.url/")
+st.write(f"BASE_URL: {BASE_URL}")  # デバッグ用に表示
+
 
 # URLパラメータからDFDのテキストを取得（指定がない場合は空の文字列）
 query_params = st.query_params

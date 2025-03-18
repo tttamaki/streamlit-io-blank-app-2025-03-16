@@ -40,27 +40,30 @@ def generate_dfd():
             st.session_state.generated = False
             st.session_state.error_message = process.stderr if process.returncode != 0 else process_pdf.stderr
 
-def main():
-    st.title("DFD Generator with Streamlit")
-    
-    st.session_state.BASE_URL = st.secrets["BASE_URL"] if "BASE_URL" in st.secrets else "https://this.app.url/"
-    
+def initialize_dfd_text():
+    """URLパラメータからDFDテキストを初期化する"""
     query_params = st.query_params
-    
     if "dfd_text" not in st.session_state:
         dfd_text = query_params.get("text", "")
         if dfd_text:
             dfd_text = urllib.parse.unquote(dfd_text)
             st.session_state.dfd_text = dfd_text
-            st.success("DFD text loaded from URL.") 
+            st.success("DFD text loaded from URL.")
         else:
             st.session_state.dfd_text = ""
+
+def main():
+    st.title("DFD Generator with Streamlit")
+    
+    st.session_state.BASE_URL = st.secrets["BASE_URL"] if "BASE_URL" in st.secrets else "https://this.app.url/"
+    
+    initialize_dfd_text()
     
     st.selectbox("Select output format:", ["svg", "png", "jpg"], index=0, key="output_format")
     
     st.text_area("Enter DFD text (see [syntax document](https://github.com/pbauermeister/dfd/blob/main/doc/README.md)):", st.session_state.dfd_text, key="dfd_text", on_change=generate_dfd)
     
-    if "generated" not in st.session_state and query_params.get("text", ""):
+    if "generated" not in st.session_state and st.query_params.get("text", ""):
         generate_dfd()
     
     st.button("Generate DFD", on_click=generate_dfd)

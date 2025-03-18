@@ -45,15 +45,21 @@ def generate_dfd():
             st.session_state.generated = True
             st.session_state.generated_file = output_file_path
             st.session_state.generated_url = f"{BASE_URL}?text={urllib.parse.quote(st.session_state.dfd_text)}"
+            st.session_state.error_message = ""
         else:
-            st.error("Error generating DFD:")
-            st.text(process.stderr)
+            st.session_state.generated = False
+            st.session_state.error_message = process.stderr
 
 # ボタンを押してDFDを生成
 st.button("Generate DFD", on_click=generate_dfd)
 
 # ユーザー入力欄（テキストエリアをボタンの下に移動）
 dfd_text = st.text_area("Enter DFD text (see [syntax document](https://github.com/pbauermeister/dfd/blob/main/doc/README.md)):", dfd_text, key="dfd_text", on_change=generate_dfd)
+
+# エラー表示をテキストエリアの下に移動
+if "error_message" in st.session_state and st.session_state.error_message:
+    st.error("Error generating DFD:")
+    st.text(st.session_state.error_message)
 
 # 生成結果をボタンの下に表示
 if st.session_state.get("generated", False):

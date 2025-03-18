@@ -5,7 +5,16 @@ import streamlit as st
 import urllib.parse
 
 def run_data_flow_diagram(input_file_path, output_format):
-    """data-flow-diagramを実行し、指定されたフォーマットのファイルを生成する"""
+    """
+    Executes the data-flow-diagram command to generate a diagram in the specified format.
+    
+    Args:
+        input_file_path (str): Path to the input text file containing the DFD definition.
+        output_format (str): The format of the output file (e.g., "svg", "png", "jpg", "pdf").
+    
+    Returns:
+        tuple: (subprocess.CompletedProcess, str) - The process result and output file path.
+    """
     output_file_path = input_file_path.replace(".txt", f".{output_format}")
     command = [
         "data-flow-diagram",
@@ -18,7 +27,16 @@ def run_data_flow_diagram(input_file_path, output_format):
     return process, output_file_path
 
 def process_dfd_results(process, process_pdf, output_file_path, pdf_file_path, dfd_text):
-    """DFD生成結果を処理し、ステートを更新する"""
+    """
+    Processes the results of the DFD generation and updates session state accordingly.
+    
+    Args:
+        process (subprocess.CompletedProcess): The process result for the selected format.
+        process_pdf (subprocess.CompletedProcess): The process result for the PDF format.
+        output_file_path (str): The path of the generated output file.
+        pdf_file_path (str): The path of the generated PDF file.
+        dfd_text (str): The DFD text input used for generation.
+    """
     if process.returncode == 0 and process_pdf.returncode == 0:
         st.session_state.generated = True
         st.session_state.generated_file = output_file_path
@@ -30,22 +48,27 @@ def process_dfd_results(process, process_pdf, output_file_path, pdf_file_path, d
         st.session_state.error_message = process.stderr if process.returncode != 0 else process_pdf.stderr
 
 def generate_dfd():
+    """
+    Generates the DFD diagram based on the current text input in session state.
+    """
     dfd_text = st.session_state.get("dfd_text", "").strip()
     if dfd_text:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as input_file:
             input_file.write(dfd_text.encode("utf-8"))
             input_file_path = input_file.name
         
-        # 選択されたフォーマットの生成
+        # Generate the selected format
         process, output_file_path = run_data_flow_diagram(input_file_path, st.session_state.output_format)
         
-        # PDFの生成
+        # Generate the PDF format
         process_pdf, pdf_file_path = run_data_flow_diagram(input_file_path, "pdf")
         
         process_dfd_results(process, process_pdf, output_file_path, pdf_file_path, dfd_text)
 
 def initialize_dfd_text():
-    """URLパラメータからDFDテキストを初期化する"""
+    """
+    Initializes the DFD text from URL parameters if provided.
+    """
     query_params = st.query_params
     if "dfd_text" not in st.session_state:
         dfd_text = query_params.get("text", "")
@@ -57,6 +80,9 @@ def initialize_dfd_text():
             st.session_state.dfd_text = ""
 
 def main():
+    """
+    Main function to render the Streamlit UI and handle user interactions.
+    """
     st.title("DFD Generator with Streamlit")
     
     st.session_state.BASE_URL = st.secrets["BASE_URL"] if "BASE_URL" in st.secrets else "https://this.app.url/"

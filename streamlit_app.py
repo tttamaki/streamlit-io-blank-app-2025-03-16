@@ -79,6 +79,35 @@ def initialize_dfd_text():
         else:
             st.session_state.dfd_text = ""
 
+def handle_dfd_generation():
+    """
+    Checks if DFD generation should be triggered based on session state and URL parameters.
+    """
+    if "generated" not in st.session_state and st.query_params.get("text", ""):
+        generate_dfd()
+
+def display_error_message():
+    """
+    Displays error messages if DFD generation fails.
+    """
+    if "error_message" in st.session_state and st.session_state.error_message:
+        st.error("Error generating DFD:")
+        st.text(st.session_state.error_message)
+
+def display_generated_dfd():
+    """
+    Displays the generated DFD image and provides a PDF download option.
+    """
+    if st.session_state.get("generated", False):
+        st.success("DFD generated successfully!")
+        st.image(st.session_state.generated_file)
+        
+        with open(st.session_state.generated_pdf_file, "rb") as f:
+            st.download_button("Download PDF", f, file_name="dfd.pdf")
+        
+        st.text_input("Copy the generated DFD URL:", st.session_state.generated_url, help="Copy this URL manually")
+        st.code(st.session_state.generated_url, language="text")
+
 def main():
     """
     Main function to render the Streamlit UI and handle user interactions.
@@ -93,24 +122,13 @@ def main():
     
     st.text_area("Enter DFD text (see [syntax document](https://github.com/pbauermeister/dfd/blob/main/doc/README.md)):", st.session_state.dfd_text, key="dfd_text", on_change=generate_dfd)
     
-    if "generated" not in st.session_state and st.query_params.get("text", ""):
-        generate_dfd()
+    handle_dfd_generation()
     
     st.button("Generate DFD", on_click=generate_dfd)
     
-    if "error_message" in st.session_state and st.session_state.error_message:
-        st.error("Error generating DFD:")
-        st.text(st.session_state.error_message)
+    display_error_message()
     
-    if st.session_state.get("generated", False):
-        st.success("DFD generated successfully!")
-        st.image(st.session_state.generated_file)
-        
-        with open(st.session_state.generated_pdf_file, "rb") as f:
-            st.download_button("Download PDF", f, file_name="dfd.pdf")
-        
-        st.text_input("Copy the generated DFD URL:", st.session_state.generated_url, help="Copy this URL manually")
-        st.code(st.session_state.generated_url, language="text")
+    display_generated_dfd()
 
 if __name__ == "__main__":
     main()

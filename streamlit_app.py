@@ -81,7 +81,7 @@ def initialize_dfd_text():
                 st.session_state.dfd_text = decoded_text
                 st.success("DFD text loaded from URL.")
             except Exception:
-                st.session_state.dfd_text = ""
+                st.session_state.dfd_text = encoded_text
         else:
             st.session_state.dfd_text = ""
 

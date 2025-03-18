@@ -3,6 +3,7 @@ import tempfile
 import os
 import streamlit as st
 import urllib.parse
+import bz2
 
 def run_data_flow_diagram(input_file_path, output_format):
     """
@@ -38,10 +39,12 @@ def process_dfd_results(process, process_pdf, output_file_path, pdf_file_path, d
         dfd_text (str): The DFD text input used for generation.
     """
     if process.returncode == 0 and process_pdf.returncode == 0:
+        compressed_text = bz2.compress(dfd_text.encode())
+        encoded_text = compressed_text.hex()
         st.session_state.generated = True
         st.session_state.generated_file = output_file_path
         st.session_state.generated_pdf_file = pdf_file_path
-        st.session_state.generated_url = f"{st.session_state.BASE_URL}?text={urllib.parse.quote(dfd_text)}"
+        st.session_state.generated_url = f"{st.session_state.BASE_URL}?text={encoded_text}"
         st.session_state.error_message = ""
     else:
         st.session_state.generated = False
@@ -71,11 +74,14 @@ def initialize_dfd_text():
     """
     query_params = st.query_params
     if "dfd_text" not in st.session_state:
-        dfd_text = query_params.get("text", "")
-        if dfd_text:
-            dfd_text = urllib.parse.unquote(dfd_text)
-            st.session_state.dfd_text = dfd_text
-            st.success("DFD text loaded from URL.")
+        encoded_text = query_params.get("text", "")
+        if encoded_text:
+            try:
+                decoded_text = bz2.decompress(bytes.fromhex(encoded_text)).decode()
+                st.session_state.dfd_text = decoded_text
+                st.success("DFD text loaded from URL.")
+            except Exception:
+                st.session_state.dfd_text = ""
         else:
             st.session_state.dfd_text = ""
 

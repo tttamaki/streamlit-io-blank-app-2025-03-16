@@ -17,6 +17,18 @@ def run_data_flow_diagram(input_file_path, output_format):
     process = subprocess.run(command, capture_output=True, text=True)
     return process, output_file_path
 
+def process_dfd_results(process, process_pdf, output_file_path, pdf_file_path, dfd_text):
+    """DFD生成結果を処理し、ステートを更新する"""
+    if process.returncode == 0 and process_pdf.returncode == 0:
+        st.session_state.generated = True
+        st.session_state.generated_file = output_file_path
+        st.session_state.generated_pdf_file = pdf_file_path
+        st.session_state.generated_url = f"{st.session_state.BASE_URL}?text={urllib.parse.quote(dfd_text)}"
+        st.session_state.error_message = ""
+    else:
+        st.session_state.generated = False
+        st.session_state.error_message = process.stderr if process.returncode != 0 else process_pdf.stderr
+
 def generate_dfd():
     dfd_text = st.session_state.get("dfd_text", "").strip()
     if dfd_text:
@@ -30,15 +42,7 @@ def generate_dfd():
         # PDFの生成
         process_pdf, pdf_file_path = run_data_flow_diagram(input_file_path, "pdf")
         
-        if process.returncode == 0 and process_pdf.returncode == 0:
-            st.session_state.generated = True
-            st.session_state.generated_file = output_file_path
-            st.session_state.generated_pdf_file = pdf_file_path
-            st.session_state.generated_url = f"{st.session_state.BASE_URL}?text={urllib.parse.quote(dfd_text)}"
-            st.session_state.error_message = ""
-        else:
-            st.session_state.generated = False
-            st.session_state.error_message = process.stderr if process.returncode != 0 else process_pdf.stderr
+        process_dfd_results(process, process_pdf, output_file_path, pdf_file_path, dfd_text)
 
 def initialize_dfd_text():
     """URLパラメータからDFDテキストを初期化する"""
